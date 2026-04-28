@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MLIS v7.0 雙欄對照排程引擎</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --panel: #ffffff;
+      --text: #111111;
+      --muted: #666666;
+      --line: #d9d9d9;
+      --line-strong: #b5b5b5;
+      --soft: #f5f5f5;
+      --soft-2: #fafafa;
+      --shadow: 0 8px 24px rgba(0,0,0,0.06);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      line-height: 1.45;
+    }
+
+    .container {
+      width: min(1440px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 24px 0 40px;
+    }
+
+    .hero,
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .hero-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .title-wrap h1 {
+      font-size: clamp(1.4rem, 2.2vw, 2rem);
+      margin: 0;
+      letter-spacing: 0.02em;
+    }
+
+    .title-wrap p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .global-setting {
+      min-width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .field-label {
+      font-size: 0.82rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .segmented {
+      display: inline-grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px;
+      gap: 4px;
+      width: min(100%, 360px);
+    }
+
+    .segmented input {
+      display: none;
+    }
+
+    .segmented label {
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 0.95rem;
+      text-align: center;
+      color: var(--muted);
+      transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+      border: 1px solid transparent;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .segmented input:checked + label {
+      background: #111111;
+      color: #ffffff;
+      border-color: #111111;
+    }
+
+    .meta-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--line);
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .panel {
+      padding: 18px;
+      min-width: 0;
+    }
+
+    .panel-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .panel h2 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .panel-sub {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-top: 6px;
+    }
+
+    .summary {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-bottom: 14px;
+    }
+
+    .summary-card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: var(--soft-2);
+      min-width: 0;
+    }
+
+    .summary-card .k {
+      display: block;
+      font-size: 0.76rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .summary-card .v {
+      font-size: 0.96rem;
+      font-weight: 600;
+      word-break: break-word;
+    }
+
+    .input-group {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .input-group.single {
+      grid-template-columns: 1fr;
+    }
+
+    .input-card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--soft-2);
+      min-width: 0;
+    }
+
+    .input-card label {
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    input[type="date"] {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      padding: 9px 12px;
+      font: inherit;
+      color: var(--text);
+      background: #fff;
+    }
+
+    .message {
+      min-height: 24px;
+      margin-bottom: 10px;
+      color: var(--text);
+      font-size: 0.93rem;
+    }
+
+    .message:empty {
+      display: none;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      min-width: 520px;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    thead th {
+      background: var(--soft);
+      border-bottom: 1px solid var(--line);
+      font-size: 0.88rem;
+      letter-spacing: 0.03em;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    th, td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+
+    th:nth-child(1), td:nth-child(1) { width: 72px; }
+    th:nth-child(2), td:nth-child(2) { width: auto; }
+    th:nth-child(3), td:nth-child(3) { width: 132px; }
+    th:nth-child(4), td:nth-child(4) { width: 92px; }
+
+    .muted { color: var(--muted); }
+
+    .footer-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 1080px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .container {
+        width: min(100vw - 20px, 100%);
+        padding: 14px 0 28px;
+      }
+
+      .hero, .panel {
+        border-radius: 14px;
+      }
+
+      .hero {
+        padding: 16px;
+      }
+
+      .panel {
+        padding: 14px;
+      }
+
+      .summary {
+        grid-template-columns: 1fr;
+      }
+
+      .input-group {
+        grid-template-columns: 1fr;
+      }
+
+      table {
+        min-width: 500px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="hero">
+      <div class="hero-head">
+        <div class="title-wrap">
+          <h1>MLIS v7.0 雙欄對照排程引擎</h1>
+          <p>全域設定 + 左右雙欄獨立計算，協助同時對照理想企劃排程與現實船期結果。</p>
+        </div>
+
+        <div class="global-setting">
+          <span class="field-label">生產模式</span>
+          <div class="segmented" role="radiogroup" aria-label="生產模式切換">
+            <input type="radio" id="mode45" name="productionMode" value="45" checked />
+            <label for="mode45">45 天大貨</label>
+            <input type="radio" id="mode25" name="productionMode" value="25" />
+            <label for="mode25">25 天一般件</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="meta-line">
+        <span>全域設定同步套用左右兩欄「大貨生產」節點</span>
+        <span>•</span>
+        <span>45 / 25 天皆以日曆天計</span>
+        <span>•</span>
+        <span>工作天排除週六、週日</span>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>理想企劃模式</h2>
+            <div class="panel-sub">Target-Driven｜由活動正式開始日強制逆推全部節點</div>
+          </div>
+        </div>
+
+        <div class="summary" id="leftSummary"></div>
+
+        <div class="input-group single">
+          <div class="input-card">
+            <label for="leftActivityDate">[A] 活動正式開始日</label>
+            <input id="leftActivityDate" type="date" />
+          </div>
+        </div>
+
+        <div class="message" id="leftMessage"></div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>編號</th>
+                <th>節點名稱</th>
+                <th>日期</th>
+                <th>星期</th>
+              </tr>
+            </thead>
+            <tbody id="leftTableBody"></tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>現實船期模式</h2>
+            <div class="panel-sub">Reality-Driven｜由實際 Closing / ETA 逆推上游並順推最快活動日</div>
+          </div>
+        </div>
+
+        <div class="summary" id="rightSummary"></div>
+
+        <div class="input-group">
+          <div class="input-card">
+            <label for="rightClosingDate">[B] 實際結關日 Closing</label>
+            <input id="rightClosingDate" type="date" />
+          </div>
+          <div class="input-card">
+            <label for="rightEtaDate">[C] 實際抵港日 ETA</label>
+            <input id="rightEtaDate" type="date" />
+          </div>
+        </div>
+
+        <div class="message" id="rightMessage"></div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>編號</th>
+                <th>節點名稱</th>
+                <th>日期</th>
+                <th>星期</th>
+              </tr>
+            </thead>
+            <tbody id="rightTableBody"></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <div class="footer-note">
+      日期代表各段作業的開始日；所有偏移皆遵守「不含目標節點當日」原則。
+    </div>
+  </main>
+
+  <script>
+    const WEEK_LABELS = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+
+    const NODE_LABELS = {
+      "01": "行銷專案內容確定",
+      "02": "確認圖稿發送打樣",
+      "03": "打樣確認",
+      "04": "大貨生產",
+      "05": "分貨清倉作業",
+      "06": "[B] 結關 Closing",
+      "07": "[C] 到達長灘 ETA",
+      "08": "美國總倉",
+      "09": "全美配送",
+      "10": "門店佈置",
+      "11": "[A] 活動正式開始"
+    };
+
+    const els = {
+      leftActivityDate: document.getElementById("leftActivityDate"),
+      rightClosingDate: document.getElementById("rightClosingDate"),
+      rightEtaDate: document.getElementById("rightEtaDate"),
+      leftMessage: document.getElementById("leftMessage"),
+      rightMessage: document.getElementById("rightMessage"),
+      leftTableBody: document.getElementById("leftTableBody"),
+      rightTableBody: document.getElementById("rightTableBody"),
+      leftSummary: document.getElementById("leftSummary"),
+      rightSummary: document.getElementById("rightSummary"),
+      modeInputs: Array.from(document.querySelectorAll('input[name="productionMode"]'))
+    };
+
+    function parseInputDate(value) {
+      if (!value) return null;
+      const [year, month, day] = value.split("-").map(Number);
+      if (!year || !month || !day) return null;
+      return new Date(year, month - 1, day);
+    }
+
+    function cloneDate(date) {
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    }
+
+    function formatDate(date) {
+      if (!date) return "—";
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}/${m}/${d}`;
+    }
+
+    function formatWeekday(date) {
+      return date ? WEEK_LABELS[date.getDay()] : "—";
+    }
+
+    function toSortableNumber(date) {
+      return date ? Number(`${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, "0")}${String(date.getDate()).padStart(2, "0")}`) : 0;
+    }
+
+    // 1. 日曆天加減函式
+    function addCalendarDays(date, days) {
+      const result = cloneDate(date);
+      result.setDate(result.getDate() + days);
+      return result;
+    }
+
+    function subtractCalendarDays(date, days) {
+      return addCalendarDays(date, -days);
+    }
+
+    function isBusinessDay(date) {
+      const day = date.getDay();
+      return day !== 0 && day !== 6;
+    }
+
+    // 2. 工作天加減函式（排除六日）
+    function shiftBusinessDays(date, days) {
+      const result = cloneDate(date);
+      const direction = days >= 0 ? 1 : -1;
+      let remaining = Math.abs(days);
+
+      while (remaining > 0) {
+        result.setDate(result.getDate() + direction);
+        if (isBusinessDay(result)) remaining -= 1;
+      }
+      return result;
+    }
+
+    function addBusinessDays(date, days) {
+      return shiftBusinessDays(date, days);
+    }
+
+    function subtractBusinessDays(date, days) {
+      return shiftBusinessDays(date, -days);
+    }
+
+    // 3. ETA 星期校準函式（不晚於理論日期的最近週五）
+    function calibrateEtaToFriday(date) {
+      const result = cloneDate(date);
+      while (result.getDay() !== 5) {
+        result.setDate(result.getDate() - 1);
+      }
+      return result;
+    }
+
+    // 4. Closing 星期校準函式（不晚於理論日期的最近週四）
+    function calibrateClosingToThursday(date) {
+      const result = cloneDate(date);
+      while (result.getDay() !== 4) {
+        result.setDate(result.getDate() - 1);
+      }
+      return result;
+    }
+
+    // 5. 左欄逆推計算函式
+    function calculateLeftSchedule(activityDate, productionDays) {
+      const n11 = cloneDate(activityDate);
+      const n10 = subtractCalendarDays(n11, 5);
+      const n09 = subtractCalendarDays(n10, 10);
+      const n08 = subtractCalendarDays(n09, 3);
+      const n07Theoretical = subtractCalendarDays(n08, 12);
+      const n07 = calibrateEtaToFriday(n07Theoretical);
+      const n06Theoretical = subtractCalendarDays(n07, 22);
+      const n06 = calibrateClosingToThursday(n06Theoretical);
+      const n05 = subtractBusinessDays(n06, 5);
+      const n04 = subtractCalendarDays(n05, productionDays);
+      const n03 = subtractBusinessDays(n04, 10);
+      const n02 = subtractBusinessDays(n03, 2);
+      const n01 = subtractCalendarDays(n02, 14);
+
+      return {
+        "01": n01,
+        "02": n02,
+        "03": n03,
+        "04": n04,
+        "05": n05,
+        "06": n06,
+        "07": n07,
+        "08": n08,
+        "09": n09,
+        "10": n10,
+        "11": n11
+      };
+    }
+
+    // 6. 右欄雙向計算函式
+    function calculateRightSchedule(closingDate, etaDate, productionDays) {
+      const n06 = cloneDate(closingDate);
+      const n07 = cloneDate(etaDate);
+
+      const n05 = subtractBusinessDays(n06, 5);
+      const n04 = subtractCalendarDays(n05, productionDays);
+      const n03 = subtractBusinessDays(n04, 10);
+      const n02 = subtractBusinessDays(n03, 2);
+      const n01 = subtractCalendarDays(n02, 14);
+
+      const n08 = addCalendarDays(n07, 12);
+      const n09 = addCalendarDays(n08, 3);
+      const n10 = addCalendarDays(n09, 10);
+      const n11 = addCalendarDays(n10, 5);
+
+      return {
+        "01": n01,
+        "02": n02,
+        "03": n03,
+        "04": n04,
+        "05": n05,
+        "06": n06,
+        "07": n07,
+        "08": n08,
+        "09": n09,
+        "10": n10,
+        "11": n11
+      };
+    }
+
+    function getProductionDays() {
+      return Number(document.querySelector('input[name="productionMode"]:checked').value);
+    }
+
+    function makeSummaryCard(label, value) {
+      return `
+        <div class="summary-card">
+          <span class="k">${label}</span>
+          <span class="v">${value}</span>
+        </div>
+      `;
+    }
+
+    function setLeftSummary(data) {
+      els.leftSummary.innerHTML = [
+        makeSummaryCard("建議 Closing", data ? formatDate(data["06"]) : "—"),
+        makeSummaryCard("建議 ETA", data ? formatDate(data["07"]) : "—"),
+        makeSummaryCard("活動日", data ? formatDate(data["11"]) : "—")
+      ].join("");
+    }
+
+    function setRightSummary(data) {
+      els.rightSummary.innerHTML = [
+        makeSummaryCard("實際 Closing", data ? formatDate(data["06"]) : "—"),
+        makeSummaryCard("實際 ETA", data ? formatDate(data["07"]) : "—"),
+        makeSummaryCard("最快活動日", data ? formatDate(data["11"]) : "—")
+      ].join("");
+    }
+
+    function renderTable(tbody, data) {
+      const keys = Object.keys(NODE_LABELS).sort();
+      tbody.innerHTML = keys.map((key) => {
+        const date = data?.[key] || null;
+        return `
+          <tr>
+            <td>${key}</td>
+            <td title="${NODE_LABELS[key]}">${NODE_LABELS[key]}</td>
+            <td>${formatDate(date)}</td>
+            <td>${formatWeekday(date)}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function renderLeft() {
+      const productionDays = getProductionDays();
+      const activityDate = parseInputDate(els.leftActivityDate.value);
+
+      if (!activityDate) {
+        els.leftMessage.textContent = "請先輸入活動正式開始日";
+        renderTable(els.leftTableBody, null);
+        setLeftSummary(null);
+        return;
+      }
+
+      const schedule = calculateLeftSchedule(activityDate, productionDays);
+      els.leftMessage.textContent = "";
+      renderTable(els.leftTableBody, schedule);
+      setLeftSummary(schedule);
+    }
+
+    function renderRight() {
+      const productionDays = getProductionDays();
+      const closingDate = parseInputDate(els.rightClosingDate.value);
+      const etaDate = parseInputDate(els.rightEtaDate.value);
+
+      if (!closingDate || !etaDate) {
+        els.rightMessage.textContent = "請先完成實際結關日與實際抵港日輸入";
+        renderTable(els.rightTableBody, null);
+        setRightSummary(null);
+        return;
+      }
+
+      if (toSortableNumber(etaDate) < toSortableNumber(closingDate)) {
+        els.rightMessage.textContent = "抵港日不可早於結關日";
+        renderTable(els.rightTableBody, null);
+        setRightSummary(null);
+        return;
+      }
+
+      const schedule = calculateRightSchedule(closingDate, etaDate, productionDays);
+      els.rightMessage.textContent = "";
+      renderTable(els.rightTableBody, schedule);
+      setRightSummary(schedule);
+    }
+
+    function renderAll() {
+      renderLeft();
+      renderRight();
+    }
+
+    els.leftActivityDate.addEventListener("input", renderLeft);
+    els.rightClosingDate.addEventListener("input", renderRight);
+    els.rightEtaDate.addEventListener("input", renderRight);
+    els.modeInputs.forEach((input) => input.addEventListener("change", renderAll));
+
+    renderAll();
+  </script>
+</body>
+</html>
