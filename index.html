@@ -372,7 +372,7 @@
 
         <div class="input-group single">
           <div class="input-card">
-            <label for="leftActivityDate">⭐活動開始日</label>
+            <label for="leftActivityDate">活動開始日</label>
             <input id="leftActivityDate" type="date" />
           </div>
         </div>
@@ -406,11 +406,11 @@
 
         <div class="input-group">
           <div class="input-card">
-            <label for="rightClosingDate">⭐結關日</label>
+            <label for="rightClosingDate">結關日</label>
             <input id="rightClosingDate" type="date" />
           </div>
           <div class="input-card">
-            <label for="rightEtaDate">⭐抵港日</label>
+            <label for="rightEtaDate">抵港日</label>
             <input id="rightEtaDate" type="date" />
           </div>
         </div>
@@ -470,7 +470,7 @@
 
     function parseInputDate(value) {
       if (!value) return null;
-      const [year, month, day] = value.split("-").map(Number);
+      const [month, day, year] = value.split("-").map(Number);
       if (!month || !day || !year) return null;
       return new Date(year, month - 1, day);
     }
@@ -558,7 +558,7 @@
       const n08 = subtractCalendarDays(n09, 3);
       const n07Theoretical = subtractCalendarDays(n08, 12);
       const n07 = calibrateEtaToFriday(n07Theoretical);
-      const n06Theoretical = subtractCalendarDays(n07, 22);
+      const n06Theoretical = subtractCalendarDays(n07, 24);
       const n06 = calibrateClosingToThursday(n06Theoretical);
       const n05 = subtractBusinessDays(n06, 5);
       const n04 = subtractCalendarDays(n05, productionDays);
