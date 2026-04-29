@@ -376,7 +376,7 @@
 
         <div class="input-group single">
           <div class="input-card">
-            <label for="leftActivityDate">活動開始日</label>
+            <label for="leftActivityDate">🔥活動開始日</label>
             <input id="leftActivityDate" type="date" />
           </div>
         </div>
@@ -410,11 +410,11 @@
 
         <div class="input-group">
           <div class="input-card">
-            <label for="rightClosingDate">結關日</label>
+            <label for="rightClosingDate">🚢結關日</label>
             <input id="rightClosingDate" type="date" />
           </div>
           <div class="input-card">
-            <label for="rightEtaDate">抵港日</label>
+            <label for="rightEtaDate">✅抵港日</label>
             <input id="rightEtaDate" type="date" />
           </div>
         </div>
@@ -446,17 +446,17 @@
     const WEEK_LABELS = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
 
     const NODE_LABELS = {
-      "01": "行銷專案內容確定",
+      "01": "⭐行銷專案內容確定",
       "02": "確認圖稿發送打樣",
       "03": "打樣確認",
       "04": "大貨生產",
       "05": "分貨作業",
-      "06": "⭐結關日",
-      "07": "⭐抵港日",
+      "06": "🚢結關日",
+      "07": "✅抵港日",
       "08": "美國總倉",
       "09": "全美配送",
       "10": "門店佈置",
-      "11": "⭐活動開始"
+      "11": "🔥活動開始"
     };
 
     const els = {
@@ -631,17 +631,17 @@
 
     function setLeftSummary(data) {
       els.leftSummary.innerHTML = [
-        makeSummaryCard("建議清關日期", data ? formatDate(data["06"]) : "—"),
+        makeSummaryCard("建議結關日期", data ? formatDate(data["06"]) : "—"),
         makeSummaryCard("建議抵港日期", data ? formatDate(data["07"]) : "—"),
-        makeSummaryCard("確定活動日期", data ? formatDate(data["11"]) : "—")
+        makeSummaryCard("🔥確定活動日期", data ? formatDate(data["11"]) : "—")
       ].join("");
     }
 
     function setRightSummary(data) {
       els.rightSummary.innerHTML = [
-        makeSummaryCard("實際清關日期", data ? formatDate(data["06"]) : "—"),
-        makeSummaryCard("實際抵港日期", data ? formatDate(data["07"]) : "—"),
-        makeSummaryCard("最快活動開始日期", data ? formatDate(data["11"]) : "—")
+        makeSummaryCard("🚢實際結關日期", data ? formatDate(data["06"]) : "—"),
+        makeSummaryCard("✅實際抵港日期", data ? formatDate(data["07"]) : "—"),
+        makeSummaryCard("🔥最快活動開始日期", data ? formatDate(data["11"]) : "—")
       ].join("");
     }
 
