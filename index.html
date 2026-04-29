@@ -521,12 +521,13 @@
     }
 
     
-    //0. 超過結關日紅色提示
+    //0. 少過結關日紅色提示
     function shouldHighlightClosing(date) {
       if (!date) return false;
       const today = getTodayStart();
-      return date > today;
+      return date < today;
     }
+
 
     
     // 1. 日曆天加減函式
