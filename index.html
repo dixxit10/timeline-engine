@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MLIS v7.0 雙欄對照排程引擎</title>
+  <title>Sharetea Marketing Timeline Engine</title>
   <style>
     :root {
       --bg: #ffffff;
@@ -335,23 +335,23 @@
     <section class="hero">
       <div class="hero-head">
         <div class="title-wrap">
-          <h1>MLIS v7.0 雙欄對照排程引擎</h1>
-          <p>全域設定 + 左右雙欄獨立計算，協助同時對照理想企劃排程與現實船期結果。</p>
+          <h1>Sharetea Marketing Timeline Engine</h1>
+          <p>行銷專案時間計算</p>
         </div>
 
         <div class="global-setting">
-          <span class="field-label">生產模式</span>
+          <span class="field-label">大貨天數</span>
           <div class="segmented" role="radiogroup" aria-label="生產模式切換">
             <input type="radio" id="mode45" name="productionMode" value="45" checked />
-            <label for="mode45">45 天大貨</label>
+            <label for="mode45">45天</label>
             <input type="radio" id="mode25" name="productionMode" value="25" />
-            <label for="mode25">25 天一般件</label>
+            <label for="mode25">25天</label>
           </div>
         </div>
       </div>
 
       <div class="meta-line">
-        <span>全域設定同步套用左右兩欄「大貨生產」節點</span>
+        <span>推算各流程時間</span>
         <span>•</span>
         <span>45 / 25 天皆以日曆天計</span>
         <span>•</span>
@@ -363,8 +363,8 @@
       <article class="panel">
         <div class="panel-head">
           <div>
-            <h2>理想企劃模式</h2>
-            <div class="panel-sub">Target-Driven｜由活動正式開始日強制逆推全部節點</div>
+            <h2>已知活動日期</h2>
+            <div class="panel-sub">以活動正式開始日逆推各時程</div>
           </div>
         </div>
 
@@ -372,7 +372,7 @@
 
         <div class="input-group single">
           <div class="input-card">
-            <label for="leftActivityDate">[A] 活動正式開始日</label>
+            <label for="leftActivityDate">⭐活動開始日</label>
             <input id="leftActivityDate" type="date" />
           </div>
         </div>
@@ -384,7 +384,7 @@
             <thead>
               <tr>
                 <th>編號</th>
-                <th>節點名稱</th>
+                <th>流程內容</th>
                 <th>日期</th>
                 <th>星期</th>
               </tr>
@@ -397,8 +397,8 @@
       <article class="panel">
         <div class="panel-head">
           <div>
-            <h2>現實船期模式</h2>
-            <div class="panel-sub">Reality-Driven｜由實際 Closing / ETA 逆推上游並順推最快活動日</div>
+            <h2>已知船期日期</h2>
+            <div class="panel-sub">手動輸入確定的結關日 / 抵港日，逆推各時程並順推最快活動日</div>
           </div>
         </div>
 
@@ -406,11 +406,11 @@
 
         <div class="input-group">
           <div class="input-card">
-            <label for="rightClosingDate">[B] 實際結關日 Closing</label>
+            <label for="rightClosingDate">⭐結關日</label>
             <input id="rightClosingDate" type="date" />
           </div>
           <div class="input-card">
-            <label for="rightEtaDate">[C] 實際抵港日 ETA</label>
+            <label for="rightEtaDate">⭐抵港日</label>
             <input id="rightEtaDate" type="date" />
           </div>
         </div>
@@ -422,7 +422,7 @@
             <thead>
               <tr>
                 <th>編號</th>
-                <th>節點名稱</th>
+                <th>流程內容</th>
                 <th>日期</th>
                 <th>星期</th>
               </tr>
@@ -434,7 +434,7 @@
     </section>
 
     <div class="footer-note">
-      日期代表各段作業的開始日；所有偏移皆遵守「不含目標節點當日」原則。
+      By Marketing 04/28/2026
     </div>
   </main>
 
@@ -661,7 +661,7 @@
       const activityDate = parseInputDate(els.leftActivityDate.value);
 
       if (!activityDate) {
-        els.leftMessage.textContent = "請先輸入活動正式開始日";
+        els.leftMessage.textContent = "請先輸入活動開始日";
         renderTable(els.leftTableBody, null);
         setLeftSummary(null);
         return;
@@ -679,7 +679,7 @@
       const etaDate = parseInputDate(els.rightEtaDate.value);
 
       if (!closingDate || !etaDate) {
-        els.rightMessage.textContent = "請先完成實際結關日與實際抵港日輸入";
+        els.rightMessage.textContent = "請先輸入結關日與抵港日";
         renderTable(els.rightTableBody, null);
         setRightSummary(null);
         return;
