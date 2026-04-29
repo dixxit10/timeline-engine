@@ -95,10 +95,6 @@
       text-transform: uppercase;
     }
 
-    .closing-alert {
-      background: #f8eaea;
-    }
-    
     .segmented {
       display: inline-grid;
       grid-template-columns: 1fr 1fr;
@@ -350,7 +346,7 @@
           <h1>
             <img src="logo.png" alt="Sharetea Logo" class="logo-img">
           </h1>
-          <p>行銷專案時間計算4</p>
+          <p>行銷專案時間計算</p>
         </div>
 
         <div class="global-setting">
@@ -512,19 +508,6 @@
     function toSortableNumber(date) {
       return date ? Number(`${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, "0")}${String(date.getDate()).padStart(2, "0")}`) : 0;
     }
-
-    //0. 日期紅色函式
-    function getTodayStart() {
-      const now = new Date();
-      return new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    }
-
-    //0.1
-    function shouldHighlightClosing(date) {
-      if (!date) return false;
-      const today = getTodayStart();
-      return date > today;
-    }
     
     // 1. 日曆天加減函式
     function addCalendarDays(date, days) {
@@ -674,14 +657,8 @@
 
     function renderTable(tbody, data) {
       const keys = Object.keys(NODE_LABELS).sort();
-    
       tbody.innerHTML = keys.map((key) => {
-        const date = data?.[key] || null;
-        const isClosingRow = key === "06";
-        const rowClass = isClosingRow && shouldHighlightClosing(date)
-          ? "closing-alert"
-          : "";
-    
+        const date = data?.[key] || null;         
         return `
           <tr class="${rowClass}">
             <td>${key}</td>
