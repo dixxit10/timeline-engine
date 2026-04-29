@@ -588,7 +588,7 @@
     // 5. 左欄逆推計算函式
     function calculateLeftSchedule(activityDate, productionDays) {
       const n11 = cloneDate(activityDate);
-      const n10 = subtractCalendarDays(n11, 12);
+      const n10 = subtractCalendarDays(n11, 10);
       const n09 = subtractCalendarDays(n10, 12);
       const n08 = subtractCalendarDays(n09, 7);
       const n07Theoretical = subtractCalendarDays(n08, 12);
@@ -630,7 +630,7 @@
       const n08 = addCalendarDays(n07, 12);
       const n09 = addCalendarDays(n08, 7);
       const n10 = addBusinessDays(n09, 12);
-      const n11 = addCalendarDays(n10, 12);
+      const n11 = addCalendarDays(n10, 10);
 
       return {
         "01": n01,
