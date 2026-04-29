@@ -566,8 +566,8 @@
       const n06 = calibrateClosingToThursday(n06Theoretical);
       const n05 = subtractBusinessDays(n06, 5);
       const n04 = subtractCalendarDays(n05, productionDays);
-      const n03 = subtractBusinessDays(n04, 14);
-      const n02 = subtractBusinessDays(n03, 2);
+      const n03 = subtractBusinessDays(n04, 4);
+      const n02 = subtractBusinessDays(n03, 14);
       const n01 = subtractCalendarDays(n02, 14);
 
       return {
