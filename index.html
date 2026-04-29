@@ -95,6 +95,11 @@
       text-transform: uppercase;
     }
 
+    .closing-alert {
+      background: #f8eaea;
+    }
+
+    
     .segmented {
       display: inline-grid;
       grid-template-columns: 1fr 1fr;
@@ -448,7 +453,7 @@
     </section>
 
     <div class="footer-note">
-      By Marketing 04/28/2026
+      By Marketing 04/29/2026
     </div>
   </main>
 
@@ -508,6 +513,21 @@
     function toSortableNumber(date) {
       return date ? Number(`${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, "0")}${String(date.getDate()).padStart(2, "0")}`) : 0;
     }
+    
+    //0.0 日期判別
+    function getTodayStart() {
+      const now = new Date();
+      return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    }
+
+    
+    //0. 超過結關日紅色提示
+    function shouldHighlightClosing(date) {
+      if (!date) return false;
+      const today = getTodayStart();
+      return date > today;
+    }
+
     
     // 1. 日曆天加減函式
     function addCalendarDays(date, days) {
@@ -657,8 +677,14 @@
 
     function renderTable(tbody, data) {
       const keys = Object.keys(NODE_LABELS).sort();
+    
       tbody.innerHTML = keys.map((key) => {
-        const date = data?.[key] || null;         
+        const date = data?.[key] || null;
+        const isClosingRow = key === "06";
+        const rowClass = isClosingRow && shouldHighlightClosing(date)
+          ? "closing-alert"
+          : "";
+    
         return `
           <tr class="${rowClass}">
             <td>${key}</td>
@@ -669,7 +695,6 @@
         `;
       }).join("");
     }
-
 
     function renderLeft() {
       const productionDays = getProductionDays();
